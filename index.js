@@ -6,9 +6,13 @@ const { User } = require('./models/User');
 
 const config = require('./config/key')
 
+const cookieParser = require('cookie-parser');
+
 app.use(express.urlencoded({extended:true}))
 
 app.use(express.json())
+
+app.use(cookieParser());
 
 const mongoose = require('mongoose');
 mongoose.connect(config.mongoURI,{
@@ -19,8 +23,7 @@ mongoose.connect(config.mongoURI,{
 app.get('/',(req,res)=>{
     res.send('Hellow World');
 })
-
-app.post('/register',(req,res)=>{
+app.post('/api/users/register',(req,res)=>{
 
 
     const user = new User(req.body)
@@ -33,9 +36,9 @@ app.post('/register',(req,res)=>{
     })
 })
 
-app.post('/login',(req,res)=>{
-    User.findOne({email:req.body.email},(err,userInfo)=>{
-        if(!userInfo){ 
+app.post('/api/users/login',(req,res)=>{
+    User.findOne({ email:req.body.email },(err,user)=>{
+        if(!user){ 
             return res.json({
                 loginSuccess: false,
                 message:'제공된 이메일에 해당하는 유저가 없습니다'
@@ -43,7 +46,16 @@ app.post('/login',(req,res)=>{
         }
 
         user.comparePassword(req.body.password, (err,isMatch)=>{
-            
+
+            if(!isMatch)
+                return res.json({loginSuccess:false, message:'비밀번호가 틀렸습니다'})
+                user.generateToken((err,user)=>{
+                if(err) return res.status(400).send(err);
+
+                res.cookie("x_auth",user.token)
+                   .status(200)
+                   .json({success:true, userId:user._id})
+            })
         })
     })
 })
