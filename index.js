@@ -3,7 +3,7 @@ const app = express();
 const port = 5000;
 
 const { User } = require('./models/User');
-
+const { auth } = require('./middleware/auth');
 const config = require('./config/key')
 
 const cookieParser = require('cookie-parser');
@@ -57,6 +57,18 @@ app.post('/api/users/login',(req,res)=>{
                    .json({success:true, userId:user._id})
             })
         })
+    })
+})
+
+app.get('/api/user/auth', auth ,(req,res)=>{
+    res.status(200).json({
+        _id:req.user._id,
+        isAdmin: req.user.role === 0 ? false:true,
+        email:req.user.email,
+        name: req.user.name,
+        lastname: req.user.lastname,
+        role:req.user.role,
+        image:req.user.image
     })
 })
 
