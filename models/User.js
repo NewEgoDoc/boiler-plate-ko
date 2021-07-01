@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-//const bcrypt = require('bcrypt');
-//const saltRounds = 10;
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 //const jwt = require('jsonwebtoken');
 //const moment = require("moment");
 
@@ -36,22 +36,22 @@ const userSchema = mongoose.Schema({
 })
 
 
-/*userSchema.pre('save', function( next ) {
+userSchema.pre('save', function( next ) {
     var user = this;
     
-    if(user.isModified('password')){    
+    if(user.isModified('password')){//여러가지 상황중에 비밀번호를 바꿀때만 하위 내용 실행 
         // console.log('password changed')
-        bcrypt.genSalt(saltRounds, function(err, salt){
-            if(err) return next(err);
+        bcrypt.genSalt(saltRounds, function(err, salt){// saltRounds를 가지고 암호화 전처리 진행 
+            if(err) return next(err);//에러가 발생하면 에러를 가지고 next
     
-            bcrypt.hash(user.password, salt, function(err, hash){
-                if(err) return next(err);
-                user.password = hash 
-                next()
+            bcrypt.hash(user.password, salt, function(err, hash){//user의 비밀번호를 가지고 본격적인 암호화 진행
+                if(err) return next(err);//암호화 실패시
+                user.password = hash //암호화가 정상적으로 작동하면 hash로 해당 값이 들어오게 되고
+                next()//정상종료되면 다음으로 넘어감
             })
         })
-    } else {
-        next()
+    } else {//이메일이나 다른 값들이 변하면 상위내용 진행하지 않고
+        next()//다음으로
     }
 });
 
@@ -62,6 +62,7 @@ userSchema.methods.comparePassword = function(plainPassword,cb){
     })
 }
 
+/*
 userSchema.methods.generateToken = function(cb) {
     var user = this;
     console.log('user',user)
