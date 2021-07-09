@@ -13,7 +13,7 @@ import RegisterPage from './components/views/RegisterPage/RegisterPage';
 import NavBar from './components/views/NavBar/NavBar';
 import Footer from './components/views/Footer/Footer';
 import MovieDetail from './components/views/MovieDetail/MovieDetail';
-
+import FavoritePage from './components/views/FavoritePage/FavoritePage';
 
 function App() {
   return (
@@ -25,6 +25,7 @@ function App() {
           <Route exact path="/login" component={Auth(LoginPage,false)} /> {/*exact 붙여주고 component에 넣으면 같아짐*/}
           <Route exact path="/register" component={Auth(RegisterPage,false)}/>
           <Route exact path="/movie/:movieId" component={Auth(MovieDetail, null)} />
+          <Route exact path="/favorite" component={Auth(FavoritePage, true)} />
         </Switch>
       </div>
       <Footer />
